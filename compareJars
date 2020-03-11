@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$#" != "2" ]; then
+    echo "You must provide arguments of two jar/zip files to compare"
+    exit -1
+fi
+
+jar1=$1
+jar2=$2
+
+diff <(unzip -qql $jar1 | awk '{print $4}' | sort) <(unzip -qql $jar2 | awk '{print $4}' | sort)
