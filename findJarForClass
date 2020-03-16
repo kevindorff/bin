@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#
+# Search (via regex) for specific files (classes) within the Jars located at
+# pwd and below. Such as
+#
+#   ~/bin/FindJarForClass.sh "com/ibm/icu/text/NumberFormat\.class"
+#
+
+# Convert "." (package separator) to "/" (path separator)
+SKIP_BIN=true
+toFind=$(echo $1 | tr "." "/")
+echo "Searching jar files for ${toFind}"
+echo ""
+
+for jar in `find . -name "*.jar"`; do
+    if [[ "${SKIP_BIN}" == "true" ]]; then
+        if [[ "$jar" == *"/bin/"* ]]; then
+            # echo "Skipping $jar as it is in a bin folder"
+            continue
+        fi
+    fi
+    found=`unzip -t $jar | grep -e "$toFind"`
+    if [ "" != "${found}" ]; then
+        echo $jar
+        echo $found
+    fi
+done

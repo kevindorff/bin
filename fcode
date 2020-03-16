@@ -1,0 +1,18 @@
+#!/usr/bin/env groovy
+
+// args=("$@")
+// for arg in "${args[@]}"; do
+//     FOUNDS=`/usr/bin/find . -name '${arg}'`
+//     echo $FOUNDS
+// done
+
+args.each { String toFind ->
+    String command = "find . -type f -name ${toFind}".toString()
+    String[] founds = command.execute().text.split("[\n\r]")
+    if (founds.length > 0) {
+        "code ${founds.join(' ')}".toString().execute()
+    }
+    else {
+        System.err.println("No matching files.")
+    }
+}
