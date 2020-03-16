@@ -17,13 +17,16 @@ codes are unique for each client.
 **NOTE: When you run this script, your existing timesheet will be cleared and REPLACED with the data
 from this script.**
 
-1. Navigate Chrome so you can see your current timesheet, such as
+1. Verify the script's getData() represents the timesheet you want to submit.
+
+2. Navigate Chrome so you can see your current timesheet, such as
 
     https://hive.ltgplc.com/TimesheetEntry/Timesheet.aspx
 
-2. Copy the contents of the script to your clipboard.
+3. Copy the contents of the script to your clipboard.
 
-3. Open **Developer Tools** (**Control-Shift-I**) and select the **Console** tab.
+4. Open **Developer Tools** (**Control-Shift-I**) and select the **Console** tab.
 
-4. Paste the contents of the script from your clipboard.
+5. Paste the contents of the script from your clipboard.
+
 
