@@ -2,9 +2,13 @@
 
 #
 # Search (via regex) for specific files (classes) within the Jars located at
-# pwd and below. Such as
+# pwd and below. If you pass a package name, the package separators (.) will
+# be convreted slashes (/).
 #
-#   ~/bin/FindJarForClass.sh "com/ibm/icu/text/NumberFormat\.class"
+# Such as the two equivalent searches:
+#
+#   $ findJarForClass com.ibm.icu.text.NumberFormat
+#   $ findJarForClass "com/ibm/icu/text/NumberFormat"
 #
 
 # Convert "." (package separator) to "/" (path separator)

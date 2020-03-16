@@ -1,10 +1,9 @@
 #!/usr/bin/env groovy
 
-// args=("$@")
-// for arg in "${args[@]}"; do
-//     FOUNDS=`/usr/bin/find . -name '${arg}'`
-//     echo $FOUNDS
-// done
+//
+// Open in VS Code all of the files...
+// All arguments will be passed through "find . -type f -name ARG"
+//
 
 args.each { String toFind ->
     String command = "find . -type f -name ${toFind}".toString()
