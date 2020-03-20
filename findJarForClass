@@ -11,6 +11,11 @@
 #   $ findJarForClass "com/ibm/icu/text/NumberFormat"
 #
 
+if [ "$#" != "1" ]; then
+    echo "You must provide ONE argument (the search string)"
+    exit -1
+fi
+
 # Convert "." (package separator) to "/" (path separator)
 SKIP_BIN=true
 toFind=$(echo $1 | tr "." "/")
