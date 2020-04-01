@@ -1,22 +1,43 @@
 /**
+ * Getting the script ready
+ * --------------------------------
+ * Edit 'timesheetData' below. You will need to create translations
+ * within 'clientToCode' and 'projectToCode'. The last column represents the number
+ * of hours for the specific project for the day. The value of 'REMAIN' can be used
+ * but should always be the LAST entry for a day (this will assume an 8 hour day).
+ * 
+ * Using the script to enter time
+ * --------------------------------
+ * To completely replace your timesheet entries for aspecific week:
+ * 
+ * * Open up the timesheet to the week in question from
+ *      https://hive.ltgplc.com/TimesheetEntry/Timesheet.aspx
+ * * Open Chrome's Developer Tools (Control-Shift-I)
+ * * Select the Console tab of Chromes Developer Tools (we'll call this Chrome Console)
+ * * Paste this entire script into the Chrome Console.
+ * * Press return to start the script executing
+ */
+
+
+/**
  * Timesheet data for the week. Here we have friendly values (keys to maps as defined
  * in translateTimesheetEntry() blow). The column order is defined in index() below.
  */
-var timesheetData = [
+ let timesheetData = [
     ['monday', 'ltg', 'ltg_meetings',  .5],
-    ['monday', 'pf',  'pf_tmNewEng', 7.5],
+    ['monday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
     ['tuesday', 'ltg', 'ltg_meetings',  .5],
-    ['tuesday', 'pf',  'pf_tmNewEng', 7.5],
+    ['tuesday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
     ['wednesday', 'ltg', 'ltg_meetings',  1.5],
-    ['wednesday', 'pf',  'pf_tmNewEng', 6.5],
+    ['wednesday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
-    ['thursday', 'ltg', 'ltg_meetings',  1],
-    ['thursday', 'pf',  'pf_tmNewEng', 7],
+    ['thursday', 'ltg', 'ltg_meetings',  1.5],
+    ['thursday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
     ['friday', 'ltg', 'ltg_meetings',  .5],
-    ['friday', 'pf',  'pf_tmNewEng', 7.5],
+    ['friday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 ];
 
 /**
@@ -27,20 +48,39 @@ clearEntireTimesheet();
 
 // Populate the timesheet one entry at a time.
 timesheetData.forEach(processTimesheetEntry);
-
+console.log("Timesheet entries complete.")
 /**
  * Process a single entry in the timesheet.
  * @param {*} untranslatedLine entry for the timesheet (not yet translated to codes)
  * @param {*} i the index of the timesheet entry (fist timesheet entry is index 0)
  */
 function processTimesheetEntry(untranslatedLine, i) {
-    var line = translateTimesheetEntry(untranslatedLine);
+    if (typeof processTimesheetEntry.currentDay == 'undefined') {
+        // Initialize some static variables for this function
+        processTimesheetEntry.DAY_EXPECTED_HOURS = 8
+        processTimesheetEntry.currentDay = ""
+        processTimesheetEntry.currentDayTotal = 0
+    }
+
+    let line = translateTimesheetEntry(untranslatedLine);
+
+    if (line[index('day')] != processTimesheetEntry.currentDay) {
+        processTimesheetEntry.currentDay = line[index('day')];
+        processTimesheetEntry.currentDayTotal = 0;
+    }
+
+    if (line[index('hours')] == 'REMAIN') {
+        line[index('hours')] = processTimesheetEntry.DAY_EXPECTED_HOURS - processTimesheetEntry.currentDayTotal
+    }
+    else {
+        processTimesheetEntry.currentDayTotal += line[index('hours')]
+    }
+
     $("select.client:last option[value='" + line[index('client')] + "']").attr("selected", true).change();
     $("select.project:last option[value='" + line[index('project')] + "']").attr("selected", true);
     $("input.hours:last").val(line[index('hours')]);
     $("select.days:last option[value='" + line[index('day')] + "']").attr("selected", true);  
     timesheet.save();
-    console.log("Saved ", line);
 }
 
 /**
@@ -72,7 +112,7 @@ function translateTimesheetEntry(line) {
     /**
      * Client string mapped client code for dropdown.
      */
-    var clientToCode = {
+    let clientToCode = {
         'ltg': "671",
         'pf': "2212"
     };
@@ -80,15 +120,16 @@ function translateTimesheetEntry(line) {
     /**
      * Project string mapped project code for dropdown.
      */
-    var projectToCode = {
+    let projectToCode = {
         'ltg_meetings': "761",
-        'pf_tmNewEng': "10634"
+        'pf_tmNewEng': "10634",
+        'pf_tmBugEng': "10636"
     }
 
     /**
      * Day string mapped day code for dropdown.
      */
-    var dayToCode = {
+    let dayToCode = {
         'saturday': "1",
         'sunday': "2",
         'monday': "3",
@@ -114,7 +155,7 @@ function index(which) {
     /**
      * Column name for the various columns in 'timesheetData'.
      */
-    var columnToIndex = {
+    let columnToIndex = {
         'day': 0,
         'client': 1,
         'project': 2,
