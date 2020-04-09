@@ -36,8 +36,7 @@
     ['thursday', 'ltg', 'ltg_meetings',  1.5],
     ['thursday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
-    ['friday', 'ltg', 'ltg_meetings',  .5],
-    ['friday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    ['friday', 'ltg', 'ltg_bankholiday',  'REMAIN'],
 ];
 
 /**
@@ -122,6 +121,9 @@ function translateTimesheetEntry(line) {
      */
     let projectToCode = {
         'ltg_meetings': "761",
+        'ltg_holiday': "751",        // Vacation
+        "ltg_sick": "752",
+        "ltg_bankholiday": "3368",   // Day off
         'pf_tmNewEng': "10634",
         'pf_tmBugEng': "10636"
     }
