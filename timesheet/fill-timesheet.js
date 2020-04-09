@@ -121,9 +121,9 @@ function translateTimesheetEntry(line) {
      */
     let projectToCode = {
         'ltg_meetings': "761",
-        'ltg_holiday': "751",        // Vacation
+        'ltg_holiday': "751",        // Vacation, paid-time-off
         "ltg_sick": "752",
-        "ltg_bankholiday": "3368",   // Day off
+        "ltg_bankholiday": "3368",   // Day off such as Christmas, memorial day
         'pf_tmNewEng': "10634",
         'pf_tmBugEng': "10636"
     }
