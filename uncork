@@ -1,0 +1,155 @@
+#!/bin/bash
+
+#
+# Title:  uncork
+# Author: Kevin Dorff
+#
+# Purpopse:
+# ----------------------------------------------------------
+# The purpose of this script is to take a list of aruments
+# which are intended to be a list of archive files 
+# (.zip, .jar, .tgz, .tar.gz, .tbz, .tar.bz).
+#
+# And the creates a folder in PWD with the name of the
+# archive without the extensions and extracts the files
+# from the archvie into the folder
+#
+# Example:
+#    $ mkdir /var/tmp/uncompress
+#    $ cd /var/tmp/uncompress
+#    $ uncork ~/Downloads/*
+#
+# If ~/Downloads contains "hello.ZIP" and "goodbye.tgz",
+# after you run the above, /var/tmp/uncompress will
+# have two new folders "hello" and "goodbye" that contain
+# the content from the associated archive files.
+#
+# Any files that are not recognized to be archives
+# will be ignored (and reported).
+#
+
+dir=$PWD
+
+#
+# Prepare to decompress the archive.
+# If the destination folder exists, remove it.
+# Create the destination folder and change into it
+# so when we unarchive it goes to the right place.
+#
+function prepareToDecompress {
+  if [ -d "$destinationFolder" ]; then
+    echo ".."
+    echo ".. Removing existing folder $destinationFolder"
+    rm -rf "$destinationFolder"
+  fi  
+
+  mkdir "$destinationFolder"
+  cd "$destinationFolder"
+
+  echo ".."
+  echo ".. Extracting archive $fullFilename to $destinationFolder"
+}
+
+#
+# Decompress the archive if the type is recognized.
+#
+function decompressArchive {
+  if [ -f $fullFilename ]; then
+    case "$compareArchiveFilename" in
+    *.zip)
+      prepareToDecompress
+      echo ".. Using unzip (.zip)"
+      unzip -q $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
+    *.jar)
+      prepareToDecompress
+      echo ".. Using unzip (.jar)"
+      unzip -q $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
+    *.tar)
+      prepareToDecompress
+      echo ".. Using tar (.tar)"
+      tar xf $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
+    *.tar.gz)
+      prepareToDecompress
+      echo ".. Using tar (.tar.gz)"
+      tar zxf $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
+    *.tgz)
+      prepareToDecompress
+      echo ".. Using tar (.tgz)"
+      tar zxf $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
+    *.tar.bz)
+      prepareToDecompress
+      echo ".. Using tar (.tar.bz)"
+      echo ".. Done"
+      echo ".."
+      tar jxf $fullFilename
+      ;;
+    *.tbz)
+      prepareToDecompress
+      echo ".. Using tar (.tbz)"
+      tar jxf $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
+    *)
+      echo "!! Skipping non archive file $fullFilename"
+      echo ".."
+      ;;
+    esac
+  else
+    echo ".."
+    echo "!! Specified archive $fullFilename does not exist."
+    echo ".."
+  fi
+}
+
+#
+# Convert the arguments which may be relative paths to
+# absolute paths. I do this up font as I imagine
+# 'realpath' depends on PWD and we change the
+# directory (cd) when we start uncompressing archives.
+#
+filesToProcess=()
+for argFilename in "$@"; do
+  filesToProcess+=( $(realpath "$argFilename") )
+done
+
+#
+# Process all arguments (one argument per file to process).
+# Decompress to a folder in aplication startup PWD named the same as the
+# archive without the extension.
+#
+# TODO: Archives such as ".tar.gz" and ".tar.bz" are supported,
+# TODO: but the folder name  will end in ".tar" right now. Fix this.
+#
+for fullFilename in ${filesToProcess[@]}; do
+  archiveFilename=$(basename -- "$fullFilename")
+  compareArchiveFilename=$( echo "${archiveFilename}" | awk '{print tolower($0)}' )
+  extension=$( echo "${archiveFilename##*.}" | awk '{print tolower($0)}' )
+  filenameNoExt="${archiveFilename%.*}"
+  destinationFolder="$dir/$filenameNoExt"
+
+  # echo "---"
+  # echo "fullFilename=${fullFilename}"
+  # echo "archiveFilename=${archiveFilename}"
+  # echo "compareArchiveFilename=${compareArchiveFilename}"
+  # echo "extension=${extension}"
+  # echo "filenameNoExt=${filenameNoExt}"
+  # echo "destinationFolder=${destinationFolder}"
+
+  decompressArchive
+done
