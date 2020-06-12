@@ -1,0 +1,45 @@
+#!/usr/bin/env groovy
+
+
+/**
+ * tabularizeXml
+ * @author Kevin Dorff
+ * 
+ * This tool is designed to take tabular XML export from TM SmartGrids and convert it
+ * to CSV for easier comparison. 
+ *
+ * The input file should be
+ * * XML
+ * * Tabular in nature, it's expected that each "<row>" should contain the same fields in the same order.
+ *
+ * You can use the following command to quickly view the  data in the XML file as a table:
+ *    $ tabularizeXml export-file.xml | column -t -s, | less -S
+ */
+
+if (!args || args.size() != 1) {
+  System.err.println "Please provide a single argument to a tabular file with a root node of <row>".
+  System.exit(-1)
+}
+
+def rows = new XmlSlurper().parseText(new File(args[0]).text)
+allRows = []
+List allFields = ['rownum']
+rows.row.eachWithIndex { row, rowIndex ->
+  List currentRow = []
+  row.children().eachWithIndex { tag, colIndex ->
+    if (rowIndex == 0) {
+      allFields << tag.name().trim()
+      // println "Observing column '${tag.name().trim()}'"
+    }
+    if (colIndex == 0) {
+        currentRow << rowIndex
+    }
+    currentRow << "'${tag.text().trim()}'"
+  }
+  allRows << (currentRow.join(', '))
+}
+
+println allFields.join(', ')
+allRows.eachWithIndex { row, rowIndex ->
+  println "${row}"
+}
