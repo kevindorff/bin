@@ -24,7 +24,8 @@
  * in translateTimesheetEntry() blow). The column order is defined in index() below.
  */
  let timesheetData = [
-    ['monday', 'ltg', 'ltg_meetings',  1.0],
+     // Week of 2020-08-01
+    ['monday', 'ltg', 'ltg_meetings', 1.5],
     ['monday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
     ['tuesday', 'ltg', 'ltg_meetings',  1.0],
@@ -33,11 +34,11 @@
     ['wednesday', 'ltg', 'ltg_meetings',  1.5],
     ['wednesday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
-    ['thursday', 'ltg', 'ltg_meetings',  1.5],
+    ['thursday', 'ltg', 'ltg_meetings',  1.0],
     ['thursday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 
-    // ['friday', 'ltg', 'ltg_meetings',  0.5],
-    // ['friday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    ['friday', 'ltg', 'ltg_meetings',  0.5],
+    ['friday', 'pf',  'pf_tmNewEng', 'REMAIN'],
 ];
 
 /**
@@ -121,12 +122,13 @@ function translateTimesheetEntry(line) {
      * Project string mapped project code for dropdown.
      */
     let projectToCode = {
-        'ltg_meetings': "761",
-        'ltg_holiday': "751",        // Vacation, paid-time-off
-        "ltg_sick": "752",
-        "ltg_bankholiday": "3368",   // Day off such as Christmas, memorial day
-        'pf_tmNewEng': "10634",
-        'pf_tmBugEng': "10636"
+        'ltg_training': '760',       // Taking LTG training
+        'ltg_meetings': '761',
+        'ltg_holiday': '751',        // Vacation, paid-time-off
+        'ltg_sick': '752',
+        'ltg_bankholiday': '3368',   // Day off such as Christmas, memorial day
+        'pf_tmNewEng': '10634',
+        'pf_tmBugEng': '10636'
     }
 
     /**
