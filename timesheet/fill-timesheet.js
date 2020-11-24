@@ -24,21 +24,25 @@
  * in translateTimesheetEntry() blow). The column order is defined in index() below.
  */
  let timesheetData = [
-     // Week of 2020-08-01
-    ['monday', 'ltg', 'ltg_meetings', 1.5],
-    ['monday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    // Week of 21-Nov-2020
+    ['monday', 'ltg_meetings', 1.5],
+    ['monday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['tuesday', 'ltg', 'ltg_meetings',  1.0],
-    ['tuesday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    ['tuesday', 'ltg_meetings',  1.0],
+    ['tuesday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['wednesday', 'ltg', 'ltg_meetings',  1.5],
-    ['wednesday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    // ['wednesday', 'ltg_meetings',  1.0],
+    // ['wednesday', 'pf_tmNewEng', 'REMAIN'],
+    ['wednesday', 'ltg_holiday',  3.75],
+    ['wednesday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['thursday', 'ltg', 'ltg_meetings',  1.0],
-    ['thursday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    // ['thursday', 'ltg_meetings',  1.0],
+    // ['thursday', 'pf_tmNewEng', 'REMAIN'],
+    ['thursday', 'ltg_bankholiday', 'REMAIN'],
 
-    ['friday', 'ltg', 'ltg_meetings',  0.5],
-    ['friday', 'pf',  'pf_tmNewEng', 'REMAIN'],
+    // ['friday', 'ltg_meetings',  1.0],
+    // ['friday', 'pf_tmNewEng', 'REMAIN'],
+    ['friday', 'ltg_bankholiday', 'REMAIN'],
 ];
 
 /**
@@ -52,10 +56,17 @@ timesheetData.forEach(processTimesheetEntry);
 console.log("Timesheet entries complete.")
 /**
  * Process a single entry in the timesheet.
+ * 
+ * I'm augmenting the object processTimesheetEntry (this function) to add
+ * additional fields (DAY_EXPECTED_HOURS, currentDay, currentDayTotal).
+ * These provide static values that exist between function calls
+ * since we cannot use a higher level scope to store data (when
+ * we run this code within the browser's console window).
+ *
  * @param {*} untranslatedLine entry for the timesheet (not yet translated to codes)
  * @param {*} i the index of the timesheet entry (fist timesheet entry is index 0)
  */
-function processTimesheetEntry(untranslatedLine, i) {
+ function processTimesheetEntry(untranslatedLine, i) {
     if (typeof processTimesheetEntry.currentDay == 'undefined') {
         // Initialize some static variables for this function
         processTimesheetEntry.DAY_EXPECTED_HOURS = 8
@@ -63,19 +74,23 @@ function processTimesheetEntry(untranslatedLine, i) {
         processTimesheetEntry.currentDayTotal = 0
     }
 
-    let line = translateTimesheetEntry(untranslatedLine);
+    let line = translateTimesheetEntry(untranslatedLine)
 
     if (line[index('day')] != processTimesheetEntry.currentDay) {
         processTimesheetEntry.currentDay = line[index('day')];
         processTimesheetEntry.currentDayTotal = 0;
     }
 
-    if (line[index('hours')] == 'REMAIN') {
+    console.log("equals remains? ", (line[index('hours')] == "REMAIN") , line[index('hours')])
+
+    if (line[index('hours')] == "REMAIN") {
         line[index('hours')] = processTimesheetEntry.DAY_EXPECTED_HOURS - processTimesheetEntry.currentDayTotal
     }
     else {
         processTimesheetEntry.currentDayTotal += line[index('hours')]
     }
+
+    console.log("Entering time for line", line)
 
     $("select.client:last option[value='" + line[index('client')] + "']").attr("selected", true).change();
     $("select.project:last option[value='" + line[index('project')] + "']").attr("selected", true);
@@ -145,26 +160,44 @@ function translateTimesheetEntry(line) {
     }
 
     return [
-        dayToCode[line[index('day')]],
-        clientToCode[line[index('client')]],
-        projectToCode[line[index('project')]],
-        line[index('hours')]
+        dayToCode[line[inputIndex('day')]],
+        clientToCode[line[inputIndex('project')].split("_")[0]],
+        projectToCode[line[inputIndex('project')]],
+        line[inputIndex('hours')]
     ];
 }
 
 /**
- * Return the column index for the desired named column
- * @param {*} which the named column to get the column index for.
+ * Return the column index for the desired named column.
+ * This is for the fields coming from translateTimesheetEntry.
+ * @param {String} which the named column to get the column index for.
  */
 function index(which) {
     /**
-     * Column name for the various columns in 'timesheetData'.
+     * Column name for the various columns from 'translateTimesheetEntry'.
      */
     let columnToIndex = {
         'day': 0,
         'client': 1,
         'project': 2,
         'hours': 3
+    }
+    return columnToIndex[which];
+}
+
+/**
+ * Return the column index for the desired column name.
+ * This is for the fields of the input, timesheetData.
+ * @param {String} which 
+ */
+function inputIndex(which) {
+    /**
+     * Column name for the various columns within 'timesheetData'
+     */
+    let columnToIndex = {
+        'day': 0,
+        'project': 1,
+        'hours': 2
     }
     return columnToIndex[which];
 }

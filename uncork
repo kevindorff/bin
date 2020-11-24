@@ -63,6 +63,13 @@ function decompressArchive {
       echo ".. Done"
       echo ".."
       ;;
+    *.war)
+      prepareToDecompress
+      echo ".. Using unzip (.war)"
+      unzip -q $fullFilename
+      echo ".. Done"
+      echo ".."
+      ;;
     *.jar)
       prepareToDecompress
       echo ".. Using unzip (.jar)"
