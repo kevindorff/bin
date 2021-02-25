@@ -6,8 +6,8 @@ class mani {
   final static String CACHE_FILE = "mani-all-jars-map.json"
 
   public static void main(String[] args) {
-    if (!args[0]) {
-      println "No argument provided."
+    if (args.size() != 1) {
+      println "Please provide only one argument, a jar file."
       System.exit(1)
     }
     new mani().run(args[0]);
