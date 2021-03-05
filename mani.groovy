@@ -20,7 +20,7 @@ class mani {
     long end  = 0
 
     File jarsMapFile = new File(CACHE_FILE)
-    Map<String, String> jarsMap = [:]
+    Map<String, List<String>> jarsMap = [:]
     if (!jarsMapFile.exists()) {
 
       // The list of jars is pretty static...
@@ -30,7 +30,10 @@ class mani {
       // Closure to help with identifying and collecting the jars we find
       def findJarsClosure = { File file ->
         if (file.name.endsWith(".jar")) {
-            jarsMap[file.name.toLowerCase()] = file.path
+            if (!jarsMap[file.name.toLowerCase()]) {
+              jarsMap[file.name.toLowerCase()] = []
+            }
+            jarsMap[file.name.toLowerCase()] << file.path
         }
       }
 
@@ -39,7 +42,7 @@ class mani {
       start = System.currentTimeMillis()
       new File(".").eachFileRecurse(findJarsClosure)
       // Write the map of jar files as JSON to CACHE_FILE
-      def jarsMapJson = JsonOutput.toJson(jarsMap)
+      def jarsMapJson = JsonOutput.prettyPrint(JsonOutput.toJson(jarsMap))
       jarsMapFile.write jarsMapJson
       end = System.currentTimeMillis()
       println "... done - took ${end-start}ms"
@@ -51,8 +54,8 @@ class mani {
       jarsMap = jsonSlurper.parseText(jarsMapFile.text)
     }
 
-    String foundJar = jarsMap[jarFilename.toLowerCase()]
-    if (!foundJar) {
+    List<String> foundJars = jarsMap[jarFilename.toLowerCase()]
+    if (!foundJars) {
       // The requested jar file didn't exist.
       println "Jar ${jarFilename} not found"
       System.exit(2)
@@ -60,8 +63,11 @@ class mani {
 
     // Output the manifest of the jar file
     println ""
-    println "----Manifest for ${foundJar} ----"
-    new java.util.jar.JarFile(foundJar).manifest.mainAttributes.entrySet().each {
+    println "----Manifest for"
+    foundJars.each {
+      println "---- ${it}"
+    }
+    new java.util.jar.JarFile(foundJars[0]).manifest.mainAttributes.entrySet().each {
       println "${it.key}: ${it.value}"
     }
     println ""
