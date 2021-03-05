@@ -6,15 +6,41 @@ class mani {
   final static String CACHE_FILE = "mani-all-jars-map.json"
 
   public static void main(String[] args) {
-    if (args.size() != 1) {
+    new mani().run(args as List);
+  }
+
+  List<String> jarFilenames = []
+  String jarFilename = null
+  boolean listMode = false
+  boolean includeDist = false
+
+  void parseArgs(List<String> args) {
+    args.each { String arg ->
+      if (arg in ['-l', '--list']) {
+        listMode = true
+      }
+      else if (arg in ['-d', '--dist']) {
+        includeDist = true
+      }
+      else {
+        jarFilenames << arg
+      }
+    }
+
+    if (jarFilenames.size() != 1) {
       println "Please provide only one argument, a jar file."
+      println "Can pass modes:"
+      println " --list/-l       just list jar files, don't dump manifest for first"
+      println "Listmode? ${listMode}"
+      println "jarFilenames? ${jarFilenames}"
       System.exit(1)
     }
-    new mani().run(args[0]);
+    jarFilename = jarFilenames[0]
   }
-  
 
-  void run(String jarFilename) {
+  void run(List<String> args) {
+
+    parseArgs(args)
 
     long start = 0
     long end  = 0
@@ -30,6 +56,7 @@ class mani {
       // Closure to help with identifying and collecting the jars we find
       def findJarsClosure = { File file ->
         if (file.name.endsWith(".jar")) {
+            String filePath = file.path
             if (!jarsMap[file.name.toLowerCase()]) {
               jarsMap[file.name.toLowerCase()] = []
             }
@@ -54,7 +81,11 @@ class mani {
       jarsMap = jsonSlurper.parseText(jarsMapFile.text)
     }
 
-    List<String> foundJars = jarsMap[jarFilename.toLowerCase()]
+    List<String> foundJars = jarsMap[jarFilename.toLowerCase()].findAll { jar ->
+      // Ignore copies in \dist\ folders unless we are running -d, --dist
+      return includeDist || !jar.toLowerCase().contains(File.separator + 'dist' + File.separator)
+    }
+
     if (!foundJars) {
       // The requested jar file didn't exist.
       println "Jar ${jarFilename} not found"
@@ -63,12 +94,14 @@ class mani {
 
     // Output the manifest of the jar file
     println ""
-    println "----Manifest for"
+    println "----Manifest for${includeDist ? " (includes /dist/ jars)" : ""}"
     foundJars.each {
       println "---- ${it}"
     }
-    new java.util.jar.JarFile(foundJars[0]).manifest.mainAttributes.entrySet().each {
-      println "${it.key}: ${it.value}"
+    if (!listMode) {
+      new java.util.jar.JarFile(foundJars[0]).manifest.mainAttributes.entrySet().each {
+        println "${it.key}: ${it.value}"
+      }
     }
     println ""
   }
