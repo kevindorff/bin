@@ -16,16 +16,20 @@ class mani {
   File jarsMapFile 
   Map<String, List<String>> jarsMap = [:]
   List<String> jarFilenames = []
-  boolean listMode = false
+  boolean quiet = false   // don't output manifest
+  boolean zipList = false
   boolean includeDist = false
 
   void parseArgs(List<String> args) {
     args.each { String arg ->
-      if (arg in ['-l', '--list']) {
-        listMode = true
+      if (arg in ['-q', '--quiet']) {
+        quiet = true
       }
       else if (arg in ['-d', '--dist']) {
         includeDist = true
+      }
+      else if (arg in ['-z', '--ziplist']) {
+        zipList = true
       }
       else {
         jarFilenames << arg
@@ -33,11 +37,15 @@ class mani {
     }
 
     if (!jarFilenames.size()) {
-      println "Please provide only one argument, a jar file."
+      println "Please propvide a list of jar files."
       println "Can pass modes:"
-      println " --list/-l       just list jar files, don't dump manifest for first"
-      println "Listmode? ${listMode}"
-      println "jarFilenames? ${jarFilenames}"
+      println " --quiet/-q       don't output the manifest"
+      println " --ziplist/-z     list contents of jar file"
+      println " --dist/-d        Report for jars in dist folders, too"
+      println "Quiet? ${quiet}"
+      println "Zip list? ${zipList}"
+      println "Include Dist? ${includeDist}"
+      println ""
       System.exit(1)
     }
   }
@@ -116,7 +124,7 @@ class mani {
     foundJars.eachWithIndex { path, index ->
       println "---- [${index}] ${path}"
       totalJarsFound++
-      if (!listMode) {
+      if (!quiet) {
         try {
           println "---- Manifest for [${index}] ${path}"
           new java.util.jar.JarFile(foundJars[0]).manifest.mainAttributes.entrySet().each {
@@ -126,6 +134,11 @@ class mani {
         catch (Exception e) {
           println "!! ERROR reading manifest"
         }
+        println ""
+      }
+      if (zipList) {
+        println "---- Jar List for [${index}] ${path}"
+        println "unzip -v ${path}".execute().text
         println ""
       }
     }
@@ -138,7 +151,7 @@ class mani {
     jarFilenames.each { String jarFilename ->
       // Very simple glob to regex (only supporting * and fixing .)
       String jarRegex = jarFilename.replaceAll('[.]', '\\\\.').replaceAll('\\*', '.*')
-      Pattern jarPattern = Pattern.compile(jarRegex)
+      Pattern jarPattern = Pattern.compile("^${jarRegex}\$")
       jarsMap.keySet().each { String jarInMap ->
         Matcher matcher = jarInMap =~ jarPattern
         matcher.find()
