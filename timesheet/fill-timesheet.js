@@ -1,14 +1,16 @@
 /**
  * Getting the script ready
  * --------------------------------
- * Edit `timesheetData` (your timesheet).
- * You will need to create translations within `clientToCode` and `projectToCode`.
-   These values can be found when viewing the Hive Timesheet. Press Control-Shift-I in
-   Chrome to enable the Developer Tools. Select the Elements tab. Click "Select an
-   element in the page to inspect it" (top left, of Developer Tools, Control-Shift-C).
- * The last column represents the number of hours for the specific project for the day. 
-   The value of 'REMAIN' can be used, but should always be the LAST entry for a day 
-   (this will assume an 8 hour day).
+ * * Edit `timesheetData` (your timesheet).
+ * * You will need to create translations within `clientToCode` and 
+ *   `projectToCode`. These values can be found when viewing the 
+ *   Hive Timesheet. Open **Developer Tools** (**Control-Shift-I**) 
+ *   and select the **Elements** tab. Click **Select an element in the 
+ *   page to inspect it** (**Control-Shift-C**) to find the code as the 
+ *   `option`'s `value`.
+ * * The last column represents the number of hours for the specific project 
+ *   for the day. The value of 'REMAIN' can be used, but should always be the 
+ *   LAST entry for a day (this will assume an 8 hour day).
  * 
  * Entering you time
  * --------------------------------
