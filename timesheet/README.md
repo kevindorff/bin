@@ -4,15 +4,16 @@ This is a script that will assist you with entering your Hive timesheet.
 
 ## Preparing the script for entering time for the week
 
-Review the data in fill-timesheet.js within the variable 'timesheetData'. This is how your timesheet
-will be filled out. 
+ * Edit `timesheetData` (your timesheet).
+ * You will need to create translations within `clientToCode` and `projectToCode`.
+   These values can be found when viewing the Hive Timesheet. Press Control-Shift-I in
+   Chrome to enable the Developer Tools. Select the Elements tab. Click "Select an
+   element in the page to inspect it" (top left, of Developer Tools, Control-Shift-C).
+ * The last column represents the number of hours for the specific project for the day. 
+   The value of 'REMAIN' can be used, but should always be the LAST entry for a day 
+   (this will assume an 8 hour day).
 
-* Column order is critical (and defined below in `index(...)`)
-* The data for day, client, and project are keys within maps that must later be translated to the map values.
-  Adding additional clients, projects requires viewing the source of the Timesheet webapp and editing
-  the maps found in `translateTimesheetEntry(...)`.
-
-## Filling your timesheet
+## Entering you time
 
 **NOTE: When you run this script, your existing timesheet will be cleared and REPLACED with the data
 from this script.**

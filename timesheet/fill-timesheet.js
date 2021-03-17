@@ -1,12 +1,16 @@
 /**
  * Getting the script ready
  * --------------------------------
- * Edit 'timesheetData' below. You will need to create translations
- * within 'clientToCode' and 'projectToCode'. The last column represents the number
- * of hours for the specific project for the day. The value of 'REMAIN' can be used
- * but should always be the LAST entry for a day (this will assume an 8 hour day).
+ * Edit `timesheetData` (your timesheet).
+ * You will need to create translations within `clientToCode` and `projectToCode`.
+   These values can be found when viewing the Hive Timesheet. Press Control-Shift-I in
+   Chrome to enable the Developer Tools. Select the Elements tab. Click "Select an
+   element in the page to inspect it" (top left, of Developer Tools, Control-Shift-C).
+ * The last column represents the number of hours for the specific project for the day. 
+   The value of 'REMAIN' can be used, but should always be the LAST entry for a day 
+   (this will assume an 8 hour day).
  * 
- * Using the script to enter time
+ * Entering you time
  * --------------------------------
  * To completely replace your timesheet entries for aspecific week:
  * 
