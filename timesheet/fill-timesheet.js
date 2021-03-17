@@ -24,11 +24,11 @@
  * in translateTimesheetEntry() blow). The column order is defined in index() below.
  */
  let timesheetData = [
-    // Week of 6-Mar-2020
-    ['monday', 'ltg_meetings', 0.5],
+    // Week of 13-Mar-2020
+    ['monday', 'ltg_meetings', 1.0],
     ['monday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['tuesday', 'ltg_meetings',  0.5],
+    ['tuesday', 'ltg_meetings',  1.0],
     ['tuesday', 'pf_tmNewEng', 'REMAIN'],
 
     ['wednesday', 'ltg_meetings',  1.5],
@@ -37,15 +37,8 @@
     ['thursday', 'ltg_meetings',  1.0],
     ['thursday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['friday', 'ltg_meetings',  1.0],
+    ['friday', 'ltg_meetings',  0.5],
     ['friday', 'pf_tmNewEng', 'REMAIN'],
-
-    // // Week of 19-Dec-2020
-    // ['monday', 'ltg_holiday', 'REMAIN'],
-    // ['tuesday', 'ltg_holiday', 'REMAIN'],
-    // ['wednesday', 'ltg_holiday', 'REMAIN'],
-    // ['thursday', 'ltg_holiday', 'REMAIN'],
-    // ['friday', 'ltg_holiday', 'REMAIN'],
 
     // Week of 26-Dec-2020
     // ['monday', 'ltg_holiday', 'REMAIN'],
