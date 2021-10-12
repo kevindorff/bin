@@ -213,6 +213,9 @@ class mani {
         return possibleCacheFile
       }
       current = current.getParentFile()
+      if (current == null) {
+        break
+      }
     }
     // Not found. Put it in the current folder.
     return new File(CACHE_FILE)
