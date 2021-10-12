@@ -206,7 +206,8 @@ class mani {
   File locateCacheFile() {
     // getParentFile() seems to depend on the File having
     // a fill path, not just starting with ".".
-    File current = new File(new File(".").canonicalPath)
+    File currentFolder = new File(new File(".").canonicalPath)
+    File current = currentFolder
     while (true) {
       File possibleCacheFile = new File(current, CACHE_FILE)
       if (possibleCacheFile.exists()) {
@@ -218,7 +219,7 @@ class mani {
       }
     }
     // Not found. Put it in the current folder.
-    return new File(CACHE_FILE)
+    return new File(currentFolder, CACHE_FILE)
   }
 
 }
