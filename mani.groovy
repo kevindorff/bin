@@ -14,11 +14,16 @@ class mani {
   }
 
   File jarsMapFile 
+  File baseFolder
   Map<String, List<String>> jarsMap = [:]
   List<String> jarFilenames = []
   boolean quiet = false   // don't output manifest
   boolean zipList = false
   boolean includeDist = false
+  boolean listKnownJars = false
+  // Let's always search for all versions... for now.
+  // Not a great default, though.
+  boolean allVersions = true
 
   void parseArgs(List<String> args) {
     args.each { String arg ->
@@ -31,17 +36,25 @@ class mani {
       else if (arg in ['-z', '--ziplist']) {
         zipList = true
       }
+      else if (arg in ['--list-known-jars']) {
+        listKnownJars  = true
+      }
+      else if (arg in ['-a', '--all-versions']) {
+        allVersions = true
+      }
       else {
         jarFilenames << arg
       }
     }
 
-    if (!jarFilenames.size()) {
+    if (!listKnownJars && !jarFilenames.size()) {
       println "Please propvide a list of jar files."
       println "Can pass modes:"
-      println " --quiet/-q       don't output the manifest"
-      println " --ziplist/-z     list contents of jar file"
-      println " --dist/-d        Report for jars in dist folders, too"
+      println " --quiet/-q          don't output the manifest"
+      println " --ziplist/-z        list contents of jar file"
+      println " --dist/-d           Report for jars in dist folders, too"
+      println " --all-versions/-a   Try to expand to all versions"
+      println " --list-known-jars   Display list of known jars"
       println "Quiet? ${quiet}"
       println "Zip list? ${zipList}"
       println "Include Dist? ${includeDist}"
@@ -60,7 +73,10 @@ class mani {
     long start = 0
     long end  = 0
 
-    jarsMapFile = new File(CACHE_FILE)
+    jarsMapFile = locateCacheFile()
+    baseFolder = jarsMapFile.getParentFile()
+
+    println "Using/creating cache file at location: ${jarsMapFile.toString()}"
     if (!jarsMapFile.exists()) {
       // The list of jars is pretty static...
       // Create a map of jars foud within the current folder
@@ -92,6 +108,30 @@ class mani {
       println "Using the cache file: ${jarsMapFile}"
       def jsonSlurper = new JsonSlurper()
       jarsMap = jsonSlurper.parseText(jarsMapFile.text)
+    }
+
+    if (listKnownJars) {
+      // List all the jars we know about and quit.
+      jarsMap.each { jar, list ->
+        println "${jar}"
+      }
+      // All done
+      return
+    }
+
+    if (allVersions) {
+      jarFilenames = jarFilenames.collect { jarFilename ->
+        // We already have a wildcard. Bail.
+        def matcher = (jarFilename =~ /^(.*?)-[\d.-]+\.jar$/)
+        if (matcher.find()) {
+            // We think we found a version. Strip it out and use a wildcard.
+            String wildcarded = matcher.group(1) + "-*.jar"
+            println "allVersions mode: Changing input from ${jarFilename} to ${wildcarded}"
+            return wildcarded
+            
+        }
+        return jarFilename
+      }
     }
 
     // Execute the searches
@@ -127,7 +167,7 @@ class mani {
       if (!quiet) {
         try {
           println "---- Manifest for [${index}] ${path}"
-          new java.util.jar.JarFile(foundJars[0]).manifest.mainAttributes.entrySet().each {
+          new java.util.jar.JarFile(new File(baseFolder, foundJars[0])).manifest.mainAttributes.entrySet().each {
             println "${it.key}: ${it.value}"
           }
         }
@@ -138,7 +178,7 @@ class mani {
       }
       if (zipList) {
         println "---- Jar List for [${index}] ${path}"
-        println "unzip -v ${path}".execute().text
+        println "unzip -v ${new File(path, baseFolder)}".execute().text
         println ""
       }
     }
@@ -162,4 +202,20 @@ class mani {
     }
     return result
   }
+
+  File locateCacheFile() {
+    // getParentFile() seems to depend on the File having
+    // a fill path, not just starting with ".".
+    File current = new File(new File(".").canonicalPath)
+    while (true) {
+      File possibleCacheFile = new File(current, CACHE_FILE)
+      if (possibleCacheFile.exists()) {
+        return possibleCacheFile
+      }
+      current = current.getParentFile()
+    }
+    // Not found. Put it in the current folder.
+    return new File(CACHE_FILE)
+  }
+
 }
