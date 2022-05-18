@@ -27,32 +27,28 @@
 
 /**
  * Timesheet data for the week. Here we have friendly values (keys to maps as defined
- * in translateTimesheetEntry() blow). The column order is defined in index() below.
+ * in translateTimesheetEntry() below). 
+ * The column order is defined in index() below.
  */
  let timesheetData = [
-    // Week of 02-Oct-2021
-    ['monday', 'ltg_meetings', 1.5],
+    // Week of 14-May-2022
+
+    ['monday', 'ltg_meetings', 1.0],
     ['monday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['tuesday', 'ltg_meetings', 0.5],
+    ['tuesday', 'ltg_meetings', 1.0],
     ['tuesday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['wednesday', 'ltg_meetings',  1.5],
+    ['wednesday', 'ltg_meetings', 1.5],
     ['wednesday', 'pf_tmNewEng', 'REMAIN'],
 
-    ['thursday', 'ltg_meetings',  1.0],
-    ['thursday', 'pf_tmNewEng', 'REMAIN'],
+    // ['thursday', 'ltg_meetings',  3.0],
+    // ['thursday', 'pf_tmNewEng', 'REMAIN'],
+    ['thursday', 'ltg_holiday', 'REMAIN'],
 
-    //['friday', 'ltg_holiday', 'REMAIN'],
-    ['friday', 'ltg_meetings',  0.5],
-    ['friday', 'pf_tmNewEng', 'REMAIN'],
-
-    // Week of 31-Jul-2021
-    // ['monday', 'ltg_holiday', 'REMAIN'],
-    // ['tuesday', 'ltg_holiday', 'REMAIN'],
-    // ['wednesday', 'ltg_holiday', 'REMAIN'],
-    // ['thursday', 'ltg_holiday', 'REMAIN'],
-    // ['friday', 'ltg_holiday', 'REMAIN'],
+    // ['friday', 'ltg_meetings',  1.5],
+    // ['friday', 'pf_tmNewEng', 'REMAIN']
+    ['friday', 'ltg_holiday', 'REMAIN']
 ];
 
 /**
