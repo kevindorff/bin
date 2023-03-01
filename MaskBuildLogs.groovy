@@ -50,11 +50,11 @@ class MaskBuildLogs {
     ]
 
     List<Pattern> threeArgPatterns = [
-        ~/^(.* [Tt]ook \[?)\d+( (ms|msecs|milliseconds)\]?>)$/,
         // [junit] INFO [com.authoria.service.DocumentMgr] - <concatenatePDFs : Processed 1 generators in 100 msecs>
-        // [junit] INFO [com.authoria.service.backgroundtasks.AuthoriaQuartzSchedulerRepository] - <Created Quartz Scheduler for tenant [MT] took [1] ms>
-        ~/^(.+ in )\d+( (ms|milliseconds|msecs)>?)$/,
+        ~/^(.* [Tt]ook \[?)\d+( (ms|msecs|milliseconds)\]?>)$/,
         // [junit] Parsed 1 blocks [30 patches] from upgrade file [persistence\conf/schema/schema-upgrade-version57.sql] in 10 milliseconds
+        ~/^(.+ in )\d+( (ms|milliseconds|msecs)>?)$/,
+        // [junit] INFO [com.authoria.service.backgroundtasks.AuthoriaQuartzSchedulerRepository] - <Created Quartz Scheduler for tenant [MT] took [1] ms>
         ~/^(.+ took \[)\d+(\] (ms|milliseconds|msecs)>)$/,
     ]
 
