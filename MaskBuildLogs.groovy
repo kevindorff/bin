@@ -6,6 +6,9 @@ import java.util.regex.Pattern
  * This will mask out or remove things like date/timestamps and execution times
  * from TM ant build logs to make them easier to compare with a diff tool 
  * like Meld https://meldmerge.org/
+ *
+ * If one needs to extend this, https://regex101.com/ is helpful for vetting
+ * regular expressions.
  * 
  * Installation
  * ----------------
