@@ -1,3 +1,18 @@
+
+
+/**
+ * Use the associated maskBuildLog.bat to launch.
+ *
+ * This will mask out or remove things like times from TM ant build logs to make them
+ * easier to compare with a diff tool like Meld https://meldmerge.org/
+ * 
+ * Command line arguments: one or more log files from TM ant build. The easiest way to capture this is to pipe
+ * the build through "tee" such as 
+ *     ant allFullBuild | tee logfile.txt
+ *     groovy logfile.txt
+ * This will create a file "logfile.txt.masked" which should be easier to diff with another masked log file.
+ */
+
 if (args.size() == 0) {
     println "No files to process"
     System.exit(1)
@@ -28,14 +43,21 @@ String maskLine(String line) {
         line = "${prefix}${logLine}"
     }
 
-    // Long took pattern
-    //  Took [4593 ms] [sql ct]:[3705] [sql row ct]:[1215] [sql time]:[499] [qc hit ct]:[0] [qc miss ct]:[0] [qc put ct]:[0] [flush ct]:[3] [hql ct]:[2] [hql row ct]:[1215] [hql time]:[498 ms] [empty ut]:[0] [cache hit ct]:[1] [cache miss ct]:[1212] [cache put ct]:[0] [cache evict ct]:[17981] [cache removeAll ct]:[0] [pg sz]:[0] [context]:[]
 
     def TOOK_PATTERN = ~/^(.* Took \[)\d+( ms\]>)$/
     matcher = line =~ TOOK_PATTERN
     matcher.find { String whole, prefix, postfix ->
         line = "${prefix}XX${postfix}"
     }
+
+    def TOOK2_PATTERN = ~/^(.* took )\d+( ms>)$/
+    matcher = line =~ TOOK2_PATTERN
+    matcher.find { String whole, prefix, postfix ->
+        line = "${prefix}XX${postfix}"
+    }
+
+    // Long took pattern, not yet implemented
+    // [junit] INFO [com.authoria.hibernate.filters.TestCandidateNoteRLSBuilder] - <Test [TestCandidateNoteRLSBuilder] Function [testAllTests] Took [3869 ms] [sql ct]:[1502] [sql row ct]:[291] [sql time]:[3081] [qc hit ct]:[18] [qc miss ct]:[84] [qc put ct]:[84] [flush ct]:[4] [hql ct]:[105] [hql row ct]:[309] [hql time]:[3038 ms] [empty ut]:[0] [cache hit ct]:[25] [cache miss ct]:[0] [cache put ct]:[0] [cache evict ct]:[259] [cache removeAll ct]:[20] [pg sz]:[0] [context]:[]>
 
     return line
 }
