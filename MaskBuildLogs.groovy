@@ -3,14 +3,25 @@ import java.util.regex.Pattern
 /**
  * Use the associated maskBuildLog.bat to launch.
  *
- * This will mask out or remove things like times from TM ant build logs to make them
- * easier to compare with a diff tool like Meld https://meldmerge.org/
+ * This will mask out or remove things like date/timestamps and execution times
+ * from TM ant build logs to make them easier to compare with a diff tool 
+ * like Meld https://meldmerge.org/
  * 
- * Command line arguments: one or more log files from TM ant build. The easiest way to capture this is to pipe
- * the build through "tee" such as 
- *     ant allFullBuild | tee logfile.txt
- *     groovy logfile.txt
- * This will create a file "logfile.txt.masked" which should be easier to diff with another masked log file.
+ * Installation
+ * ----------------
+ * * Place this file, MaskBuildLogs.groovy, and maskBuildsLogs.bat in c:\bin
+ * * Put c:\bin on your PATH
+ *
+ * Usage
+ * ----------------
+ * Write the output of the build to a file
+ *     ant allFullBuild | tee build-output.txt
+ *
+ * The script will read the specified input file(s), specified on the command line,
+ * and mask / remove some portions of the text. Output will be written to the 
+ * original filename WITH a suffix of ".masked". 
+ * In the below example, the output would be written to 'build-output.txt.masked'.
+ *     maskBuildsLogs build-output.txt
  */
 
 class MaskBuildLogs {
