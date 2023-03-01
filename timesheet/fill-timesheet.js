@@ -31,24 +31,23 @@
  * The column order is defined in index() below.
  */
  let timesheetData = [
-    // Week of 14-May-2022
+    // Week of 18-Feb-2022
 
-    ['monday', 'ltg_meetings', 1.0],
-    ['monday', 'pf_tmNewEng', 'REMAIN'],
-
-    ['tuesday', 'ltg_meetings', 1.0],
+    // ['monday', 'ltg_meetings', 2.0],
+    // ['monday', 'pf_tmNewEng', 'REMAIN'],
+    ['monday', 'ltg_bankholiday', 'REMAIN'],
+    
+    ['tuesday', 'ltg_meetings', 1.5],
     ['tuesday', 'pf_tmNewEng', 'REMAIN'],
 
     ['wednesday', 'ltg_meetings', 1.5],
     ['wednesday', 'pf_tmNewEng', 'REMAIN'],
 
-    // ['thursday', 'ltg_meetings',  3.0],
-    // ['thursday', 'pf_tmNewEng', 'REMAIN'],
-    ['thursday', 'ltg_holiday', 'REMAIN'],
+    ['thursday', 'ltg_meetings',  1.0],
+    ['thursday', 'pf_tmNewEng', 'REMAIN'],
 
-    // ['friday', 'ltg_meetings',  1.5],
-    // ['friday', 'pf_tmNewEng', 'REMAIN']
-    ['friday', 'ltg_holiday', 'REMAIN']
+    ['friday', 'ltg_meetings',  1.0],
+    ['friday', 'pf_tmNewEng', 'REMAIN']
 ];
 
 /**
