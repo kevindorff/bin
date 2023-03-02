@@ -9,6 +9,9 @@ class mani {
 
   final static String CACHE_FILE = "mani-all-jars-map.json"
 
+  /**
+   * Program entry point.
+   */
   public static void main(String[] args) {
     new mani().run(args as List);
   }
@@ -24,7 +27,11 @@ class mani {
   // Let's always search for all versions... for now.
   // Not a great default, though.
   boolean allVersions = true
+  boolean refresh = false
 
+  /**
+   * Parse command line arguments.
+   */
   void parseArgs(List<String> args) {
     args.each { String arg ->
       if (arg in ['-q', '--quiet']) {
@@ -42,6 +49,9 @@ class mani {
       else if (arg in ['-a', '--all-versions']) {
         allVersions = true
       }
+      else if (arg in ['--refresh']) {
+        refresh = true
+      }
       else {
         jarFilenames << arg
       }
@@ -55,6 +65,7 @@ class mani {
       println " --dist/-d           Report for jars in dist folders, too"
       println " --all-versions/-a   Try to expand to all versions"
       println " --list-known-jars   Display list of known jars"
+      println " --refresh           Refresh the cache. If jars have changed, add this flag."
       println "Quiet? ${quiet}"
       println "Zip list? ${zipList}"
       println "Include Dist? ${includeDist}"
@@ -67,6 +78,12 @@ class mani {
   int numTopLevelJarsNotFound = 0
   int totalJarsFound = 0
 
+  /**
+   * Kick off the process.
+   * 1. Parse arguments
+   * 2. If CACHE_FILE couldn't be found, build it.
+   * 3. Do the work.
+   */
   void run(List<String> args) {
 
     parseArgs(args)
@@ -76,7 +93,13 @@ class mani {
     jarsMapFile = locateCacheFile()
     baseFolder = jarsMapFile.getParentFile()
 
-    println "Using/creating cache file at location: ${jarsMapFile.toString()}"
+    if (refresh) {
+        if (jarsMapFile.exists()) {
+          jarsMapFile.delete()
+        }
+    }
+
+    println "Cache file at location: ${jarsMapFile.toString()}"
     if (!jarsMapFile.exists()) {
       // The list of jars is pretty static...
       // Create a map of jars foud within the current folder
@@ -93,8 +116,8 @@ class mani {
         }
       }
 
-      // Find all of the .jar files
-      println "First run. Caching a map of jar files: ${jarsMapFile}"
+      // Find all of the .jar files and write to cache file
+      println "Caching a map of jar files: ${jarsMapFile}"
       start = System.currentTimeMillis()
       new File(".").eachFileRecurse(findJarsClosure)
       // Write the map of jar files as JSON to CACHE_FILE
@@ -143,6 +166,9 @@ class mani {
     println "Didn't find ${numTopLevelJarsNotFound} jars"
   }
 
+  /**
+   * Output details from a single jar file that has been found.
+   */
   void iteration(String jarFilename) {
     List<String> foundJars = jarsMap[jarFilename].findAll { jar ->
       // Ignore copies in \dist\ folders unless we are running -d, --dist
@@ -186,6 +212,10 @@ class mani {
     numTopLevelJars++
   }
 
+  /**
+   * Convert globs (* for wildcards, ? isn't supported) into
+   * regular expressions.
+   */
   List<String> handleGlobs(List<String> jarFilenames) {
     List<String> result = []
     jarFilenames.each { String jarFilename ->
@@ -203,6 +233,12 @@ class mani {
     return result
   }
 
+  /**
+   * Look in the current and all parent directories for CACHE_FILE.
+   * If found, that config file is returned (and all searching will
+   * be relative to that folder). If not found, this will
+   * return a File to CACHE_FILE in the current directory.
+   */
   File locateCacheFile() {
     // getParentFile() seems to depend on the File having
     // a fill path, not just starting with ".".
