@@ -19,12 +19,11 @@ import java.util.regex.Pattern
  * ----------------
  * Write the output of the build to a file
  *     ant allFullBuild | tee build-output.txt
+ *     maskBuildLogs build-output.txt > build-output.txt.masked
  *
- * The script will read the specified input file(s), specified on the command line,
- * and mask / remove some portions of the text. Output will be written to the 
- * original filename WITH a suffix of ".masked". 
- * In the below example, the output would be written to 'build-output.txt.masked'.
- *     maskBuildsLogs build-output.txt
+ * If no arguments are given, it will process stdin and write to stdout.
+ * If one or more arguments are given, it will read from the file specified by
+ * the first argument and write to stdout.
  */
 
 class MaskBuildLogs {
@@ -68,19 +67,34 @@ class MaskBuildLogs {
     }
 
     int run(String[] args) {
-        if (args.size() == 0) {
-            println "No files to process"
-            return 1
-        }
-        args.each { String filename ->
-            println "Processing ${filename}"
-            File processFile = new File(filename)
-            initPatternUsage()
-            process(processFile)
-            patternUsageCounts.each { pattern, count ->
-                println "Pattern=${pattern}, count=${count}"
+        initPatternUsage()
+        BufferedReader reader = null
+        BufferedWriter writer = null
+        try {
+            if (args.size() == 0) {
+                    reader = new BufferedReader(new InputStreamReader(System.in))
+                    writer = new BufferedWriter(new OutputStreamWriter(System.out))
+                    process(reader, writer)
             }
-            println ""
+            else {
+                File processFile = new File(args[0])
+                reader = processFile.newReader()
+                writer = new BufferedWriter(new OutputStreamWriter(System.out))
+                process(processFile.newReader(), writer)
+            }
+            patternUsageCounts.each { pattern, count ->
+                // Output stats to stderr
+                System.err.println("Pattern=${pattern}, count=${count}")
+            }
+        }
+        finally {
+            if (reader != null) {
+                reader.close()
+            }
+            if (writer != null) {
+                writer.flush()
+                writer.close()
+            }
         }
         return 0
     }
@@ -132,17 +146,9 @@ class MaskBuildLogs {
         return line
     }
 
-    boolean process(File input) {
-        if (!input.exists()) {
-            return false
-        }
-        File output = new File(input.getCanonicalPath() + ".masked")
-        output.withWriter { Writer writer ->
-            input.withReader { Reader reader ->
-                reader.eachLine { String line ->
-                    writer.println maskLine(line)
-                }
-            }
+    boolean process(Reader reader, Writer writer) {
+        reader.eachLine { String line ->
+            writer.println maskLine(line)
         }
     }
 }
