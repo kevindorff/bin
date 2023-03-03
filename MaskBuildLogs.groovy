@@ -1,8 +1,6 @@
 import java.util.regex.Pattern
 
 /**
- * Use the associated maskBuildLog.bat to launch.
- *
  * This will mask out or remove things like date/timestamps and execution times
  * from TM ant build logs to make them easier to compare with a diff tool 
  * like Meld https://meldmerge.org/
@@ -13,22 +11,25 @@ import java.util.regex.Pattern
  * Installation
  * ----------------
  * * Place this file, MaskBuildLogs.groovy, and maskBuildsLogs.bat in c:\bin
- * * Put c:\bin on your PATH
+ * * Put c:\bin on your PATH. 
+ * * If you intend to place thie script elsewhere, you will need to 
+ *   edit maskBuildLogs.bat.
  *
  * Usage
  * ----------------
- * Write the output of the build to a file
+ * If no arguments are given, it will read stdin and write to stdout.
+ * If one or more command line arguments are given, it will read from all
+ * of the specified files, one at a time, and write to stdout.
+ *
+ * Examples:
+ *     ant allFullBuild | maskBuildLogs | tee build-output.txt
+ *   OR
  *     ant allFullBuild | tee build-output.txt
  *     maskBuildLogs build-output.txt > build-output.txt.masked
  *
- * If no arguments are given, it will process stdin and write to stdout.
- * If one or more arguments are given, it will read from the file specified by
- * the first argument and write to stdout.
  */
 
 class MaskBuildLogs {
-    Map<String, Integer> patternUsageCounts = [:]
-
     List<Pattern> twoArgNoSubPatterns = [
         // Remove time/datestamps from [junit], [java], and [echo].
         ~/^(\s+\[junit\] )\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+ (.*)$/,
@@ -60,69 +61,71 @@ class MaskBuildLogs {
         ~/^(.+ took \[)\d+(\] (ms|milliseconds|msecs)>)$/,
     ]
 
+    Map<String, Integer> patternUsageCounts = [:]
+
     static void main(String[] args) {
-        MaskBuildLogs mbl = new MaskBuildLogs()
-        int exitCode = mbl.run(args)
-        System.exit(exitCode)
+        MaskBuildLogs app = new MaskBuildLogs()
+        app.run(args)
     }
 
-    int run(String[] args) {
+    void run(String[] args) {
+        if (args.size() == 0) {
+            processStdin()
+        }
+        else {
+            processFiles(args)
+        }
+    }
+
+    void processStdin() {
         initPatternUsage()
-        BufferedReader reader = null
-        BufferedWriter writer = null
+        Reader reader = null
         try {
-            if (args.size() == 0) {
-                    reader = new BufferedReader(new InputStreamReader(System.in))
-                    writer = new BufferedWriter(new OutputStreamWriter(System.out))
-                    process(reader, writer)
-            }
-            else {
-                File processFile = new File(args[0])
-                reader = processFile.newReader()
-                writer = new BufferedWriter(new OutputStreamWriter(System.out))
-                process(processFile.newReader(), writer)
-            }
-            patternUsageCounts.each { pattern, count ->
-                // Output stats to stderr
-                System.err.println("Pattern=${pattern}, count=${count}")
-            }
+            reader = new BufferedReader(new InputStreamReader(System.in))
+            processInput(reader, System.out)
         }
         finally {
             if (reader != null) {
                 reader.close()
             }
-            if (writer != null) {
-                writer.flush()
-                writer.close()
+        }
+        showStats()
+    }
+
+    void processFiles(String[] args) {
+        args.each { String filename ->
+            initPatternUsage()
+            Reader reader = null
+            try {
+                File processFile = new File(filename)
+                if (processFile.exists() && processFile.isFile() && processFile.canRead()) {
+                    reader = processFile.newReader()
+                    processInput(reader, System.out)
+                }
+                else {
+                    System.err.println("Input file ${filename} does not exist or is not readable.")
+                }
             }
-        }
-        return 0
-    }
-
-    void initPatternUsage() {
-        twoArgNoSubPatterns.each { pattern ->
-            patternUsageCounts[pattern.toString()] = 0
-        }
-
-        twoArgPatterns.each { pattern ->
-            patternUsageCounts[pattern.toString()] = 0
-        }
-
-        threeArgPatterns.each { pattern ->
-            patternUsageCounts[pattern.toString()] = 0
+            finally {
+                if (reader != null) {
+                    reader.close()
+                }
+            }
+            showStats(filename)
         }
     }
 
-    void countPatternUsage(String pattern) {
-        patternUsageCounts[pattern] = ((patternUsageCounts[pattern]) + 1)
+    void processInput(Reader reader, PrintStream output) {
+        reader.eachLine { String line ->
+            output.println maskLine(line)
+        }
     }
-
 
     String maskLine(String line) {
         twoArgNoSubPatterns.each { pattern ->
             def matcher = line =~ pattern
-            matcher.find { String whole, prefix, logLine ->
-                line = "${prefix}${logLine}"
+            matcher.find { String whole, prefix, postfix ->
+                line = "${prefix}${postfix}"
                 countPatternUsage(pattern.toString())
             }
         }
@@ -146,9 +149,32 @@ class MaskBuildLogs {
         return line
     }
 
-    boolean process(Reader reader, Writer writer) {
-        reader.eachLine { String line ->
-            writer.println maskLine(line)
+    void initPatternUsage() {
+        twoArgNoSubPatterns.each { pattern ->
+            patternUsageCounts[pattern.toString()] = 0
+        }
+
+        twoArgPatterns.each { pattern ->
+            patternUsageCounts[pattern.toString()] = 0
+        }
+
+        threeArgPatterns.each { pattern ->
+            patternUsageCounts[pattern.toString()] = 0
+        }
+    }
+
+    void countPatternUsage(String pattern) {
+        patternUsageCounts[pattern] = ((patternUsageCounts[pattern]) + 1)
+    }
+
+
+    void showStats(String filename = null) {
+        if (filename != null) {
+            System.err.println("Processed ${filename}")
+        }
+        patternUsageCounts.each { pattern, count ->
+            // Output stats to stderr
+            System.err.println("Pattern=${pattern}, count=${count}")
         }
     }
 }
