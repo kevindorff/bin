@@ -31,23 +31,22 @@
  * The column order is defined in index() below.
  */
  let timesheetData = [
-    // Week of 18-Feb-2022
+    // Week of 20-May-2023
 
-    // ['monday', 'ltg_meetings', 2.0],
-    // ['monday', 'pf_tmNewEng', 'REMAIN'],
-    ['monday', 'ltg_bankholiday', 'REMAIN'],
+    ['monday', 'ltg_training_trainee', 'REMAIN'],
     
-    ['tuesday', 'ltg_meetings', 1.5],
-    ['tuesday', 'pf_tmNewEng', 'REMAIN'],
+    ['tuesday', 'pf_ta_new_eng', 2.0],
+    ['tuesday', 'ltg_training_trainee', 'REMAIN'],
 
-    ['wednesday', 'ltg_meetings', 1.5],
-    ['wednesday', 'pf_tmNewEng', 'REMAIN'],
+    ['wednesday', 'pf_ta_new_eng', 0.5],
+    ['wednesday', 'ltg_training_trainee', 'REMAIN'],
 
-    ['thursday', 'ltg_meetings',  1.0],
-    ['thursday', 'pf_tmNewEng', 'REMAIN'],
+    ['thursday', 'pf_ta_new_eng', 0.5],
+    ['thursday', 'ltg_training_trainee', 'REMAIN'],
 
-    ['friday', 'ltg_meetings',  1.0],
-    ['friday', 'pf_tmNewEng', 'REMAIN']
+    ['friday', 'pf_ta_new_eng', 0.5],
+    ['friday', 'ltg_internal_meetings',  1.0],
+    ['friday', 'ltg_training_trainee', 'REMAIN'],
 ];
 
 /**
@@ -142,11 +141,54 @@ function translateTimesheetEntry(line) {
      * Project string mapped project code for dropdown.
      */
     let projectToCode = {
-        'ltg_training': '760',       // Taking LTG training
-        'ltg_meetings': '761',
-        'ltg_holiday': '751',        // Vacation, paid-time-off
+        // General
+        // --------------
+        // 00-760 - LTG - Training (trainee)
+        // Used for any training such as LTG central compliance training or personal development
+        'ltg_training_trainee': '760',
+        // 00-761 - LTG - Internal Meeting
+        // For non-project related meetings i.e. 1-2-1 meeting with your line manager.
+        // Company update meetings etc. Do not use this for meetings regarding progress
+        // on roadmap items.
+        'ltg_internal_meetings': '761',	
+        // 00-751 - LTG - Holiday
+        // Any hours spent taken annual leave allowance (vacation, PTO)
+        'ltg_holiday': '751',
+        // 00-752 - LTG - Sickness
+        // Any hours spent out of work due to illness
         'ltg_sick': '752',
-        'ltg_bankholiday': '3368',   // Day off such as Christmas, memorial day
+        // 00-019 - LTG - Bank Holiday
+        // Use this code for bank holidays (paid holiday days off)
+        'ltg_bank_holiday': '3368',     // Day off such as Christmas, memorial day
+        // 00-759 - LTG - Management
+        // For line managers to use when logging time spent in 1-2-1 with team members 
+        // or performing general management duties.
+        'ltg_management': '759',
+        // PFR
+        // --------------
+        // 03-021 PeopleFluent - TA New - Engineering && Scrum ceremmonies
+        // Development of new functionality and Scrum ceremonies
+        'pf_ta_new_eng': '10625',         
+        // 03-023 PeopleFluent - TA Bug - Engineering
+        // Development of bugfixes or customer-reported issues 
+        'pf_ta_bug_eng': '10627',         
+        // 03-025 PeopleFluent - TA Tech Debt - Engineering
+        // Development work on tech debt items, security enhancements and general maintenance
+        'pf_ta_tech_debt_eng': '10629',
+        // 03-022 PeopleFluent - TA New - QA
+        // QA of new functionality or development of new QA frameworks and Scrum ceremonies
+        'pf_ta_new_qa': '10626',
+        // 03-024 PeopleFluent - TA Bug - QA
+        // QA of bugfixes or customer-reported issues
+        'pf_ta_bug_qa': '10628',
+        // 03-026 PeopleFluent - TA Tech Debt - QA
+        // QA tech debt work such as maintenance of automated frameworks
+        'pf_ta_tech_debt_qa': '10630',
+        // 03-027 PeopleFluent - TA - QA  Performance
+        // Performance testing
+        'pf_ta_qa_performance': '10631',
+        // TM
+        // --------------
         'pf_tmNewEng': '10634',
         'pf_tmBugEng': '10636'
     }
