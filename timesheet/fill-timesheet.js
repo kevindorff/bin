@@ -31,22 +31,20 @@
  * The column order is defined in index() below.
  */
  let timesheetData = [
-    // Week of 20-May-2023
-
-    ['monday', 'ltg_training_trainee', 'REMAIN'],
+    // Week of 27-May-2023
+    ['monday', 'ltg_bank_holiday', 'Bank holiday', 'REMAIN'],
     
-    ['tuesday', 'pf_ta_new_eng', 2.0],
-    ['tuesday', 'ltg_training_trainee', 'REMAIN'],
+    ['tuesday', 'pf_ta_new_eng', 'Scrum', 0.5],
+    ['tuesday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 
-    ['wednesday', 'pf_ta_new_eng', 0.5],
-    ['wednesday', 'ltg_training_trainee', 'REMAIN'],
+    ['wednesday', 'pf_ta_new_eng', 'Scrum', 0.5],
+    ['wednesday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 
-    ['thursday', 'pf_ta_new_eng', 0.5],
-    ['thursday', 'ltg_training_trainee', 'REMAIN'],
+    ['thursday', 'pf_ta_new_eng', 'Scrum, all-hands, goals', 2.0],
+    ['thursday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 
-    ['friday', 'pf_ta_new_eng', 0.5],
-    ['friday', 'ltg_internal_meetings',  1.0],
-    ['friday', 'ltg_training_trainee', 'REMAIN'],
+    ['friday', 'pf_ta_new_eng', 'Scrum, pfr-5263', 2.0],
+    ['friday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 ];
 
 /**
@@ -99,6 +97,7 @@ console.log("Timesheet entries complete.")
     $("select.client:last option[value='" + line[index('client')] + "']").attr("selected", true).change();
     $("select.project:last option[value='" + line[index('project')] + "']").attr("selected", true);
     $("input.hours:last").val(line[index('hours')]);
+    $("input.desc:last").val(line[index('desc')]);
     $("select.days:last option[value='" + line[index('day')] + "']").attr("selected", true);  
     timesheet.save();
 }
@@ -210,6 +209,7 @@ function translateTimesheetEntry(line) {
         dayToCode[line[inputIndex('day')]],
         clientToCode[line[inputIndex('project')].split("_")[0]],
         projectToCode[line[inputIndex('project')]],
+        line[inputIndex('desc')],
         line[inputIndex('hours')]
     ];
 }
@@ -227,7 +227,8 @@ function index(which) {
         'day': 0,
         'client': 1,
         'project': 2,
-        'hours': 3
+        'desc': 3,
+        'hours': 4
     }
     return columnToIndex[which];
 }
@@ -244,7 +245,8 @@ function inputIndex(which) {
     let columnToIndex = {
         'day': 0,
         'project': 1,
-        'hours': 2
+        'desc': 2,
+        'hours': 3
     }
     return columnToIndex[which];
 }
