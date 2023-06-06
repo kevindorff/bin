@@ -31,20 +31,23 @@
  * The column order is defined in index() below.
  */
  let timesheetData = [
-    // Week of 27-May-2023
-    ['monday', 'ltg_bank_holiday', 'Bank holiday', 'REMAIN'],
+    // Week of 03-June-2023
+    ['monday', 'ltg_internal_meetings', '1x1', 0.5],
+    ['monday', 'pf_ta_new_eng', 'Scrum ceremonies, pfr-5263', 'REMAIN'],
     
-    ['tuesday', 'pf_ta_new_eng', 'Scrum', 0.5],
-    ['tuesday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
+    ['tuesday', 'pf_ta_new_eng', 'Scrum ceremonies, pfr-5475', 'REMAIN'],
 
-    ['wednesday', 'pf_ta_new_eng', 'Scrum', 0.5],
-    ['wednesday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
+    ['wednesday', 'ltg_holiday', 'PTO', 'REMAIN'],
+    // ['wednesday', 'pf_ta_new_eng', 'Scrum', 0.5],
+    // ['wednesday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 
-    ['thursday', 'pf_ta_new_eng', 'Scrum, all-hands, goals', 2.0],
-    ['thursday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
+    ['thursday', 'ltg_holiday', 'PTO', 'REMAIN'],
+    // ['thursday', 'pf_ta_new_eng', 'Scrum, all-hands, goals', 2.0],
+    // ['thursday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 
-    ['friday', 'pf_ta_new_eng', 'Scrum, pfr-5263', 2.0],
-    ['friday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
+    ['friday', 'ltg_holiday', 'PTO', 'REMAIN'],
+    // ['friday', 'pf_ta_new_eng', 'Scrum, pfr-5263', 2.0],
+    // ['friday', 'ltg_training_trainee', 'Onboarding', 'REMAIN'],
 ];
 
 /**
